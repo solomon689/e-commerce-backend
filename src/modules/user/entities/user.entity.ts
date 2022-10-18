@@ -1,5 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Address } from './address.entity';
+import { Product } from '../../product/entities/product.entity';
+import { Purchase } from './purchases.entity';
 
 @Entity()
 export class User {
@@ -18,8 +20,18 @@ export class User {
     @Column({ type: 'text' })
     public password!: string;
 
+    @Column({ type: 'varchar', array: true, default: ["USER"] })
+    public roles?: string[];
+
     @OneToMany(() => Address, (address) => address.user)
     public addresses!: Address[];
+
+    @OneToMany(() => Purchase, (purchase) => purchase.user)
+    public purchases!: Purchase[];
+
+    @ManyToMany(() => Product)
+    @JoinTable()
+    public favorites?: Product[];
 
     constructor(user: User) {
         Object.assign(this, user);
