@@ -1,16 +1,21 @@
 import express, { Application } from "express";
 import cors from "cors";
 import { DataSource } from 'typeorm';
+import userRoutes from "../routes/user.routes";
 
 export class EcommerceServer {
     private app: Application;
-    private paths: any;
+    private paths;
 
     constructor(private readonly dataSource: DataSource,) {
         this.app = express();
+        this.paths = {
+            user: '/api/user'
+        }
 
         this.connectDatabase();
         this.middlewares();
+        this.routes();
     }
 
     public listen(port: string | number) {
@@ -25,6 +30,7 @@ export class EcommerceServer {
     }
 
     private routes(): void {
+        this.app.use(this.paths.user, userRoutes);
     }
 
     private connectDatabase(): void {

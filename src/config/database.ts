@@ -1,5 +1,7 @@
 import { DataSource } from "typeorm";
+import dotenv from "dotenv";
 
+dotenv.config();
 export class Database {
     private static instance: Database;
     private dataSource: DataSource;
