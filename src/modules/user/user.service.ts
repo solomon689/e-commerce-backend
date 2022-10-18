@@ -34,10 +34,8 @@ export class UserService {
                 
                 if (addressEntity) createdAddresses.push(addressEntity);
             }
-
-            await this.addressRepository.insert(createdAddresses);
         }
-        
+
         const hashedPassword: string = await hashPassword(user?.password);
 
         let userEntity: User = this.userRepository.create({
