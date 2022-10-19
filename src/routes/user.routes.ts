@@ -8,5 +8,6 @@ const userController: UserController = new UserController(
 const router: Router = Router();
 
 router.post('/', userController.createUser);
+router.get('/:userId', userController.findUserById);
 
 export default router;

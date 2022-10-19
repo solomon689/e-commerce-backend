@@ -48,4 +48,20 @@ export class UserService {
 
         return await this.userRepository.save(userEntity);
     }
+
+    public async findUserById(userId: string, options?: {
+        addresses?: boolean, favorites?: boolean, purchases?: boolean,
+    }): Promise<User | null> {
+        const foundedUser: User | null = await this.userRepository
+            .findOne({
+                relations: {
+                    addresses: options?.addresses,
+                    favorites: options?.favorites,
+                    purchases: options?.purchases,
+                },
+                where: { id: userId },
+            });
+
+        return foundedUser;
+    }
 }
