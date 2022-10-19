@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UserService } from './user.service';
 import { HttpStatus } from '../../utils/enums/http-status';
 import { User } from './entities/user.entity';
+import { CustomTypeOrmError } from '../../utils/errors/typeorm-error';
 
 export class UserController {
     constructor(private readonly userService: UserService) {
@@ -20,10 +21,9 @@ export class UserController {
             });
         } catch (error) {
             console.error('error =>', error);
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                statusCode: HttpStatus.BAD_REQUEST,
-                mesagge: 'Error de formato',
-            });
+            const typeormError: CustomTypeOrmError = new CustomTypeOrmError(error);
+
+            return res.status(typeormError.statusCode).json(typeormError.createResponse());
         }
     }
 }
