@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Product } from './product.entity';
 
 @Entity('product_detail')
 export class ProductDetail {
@@ -10,6 +11,9 @@ export class ProductDetail {
 
     @Column({ type: 'text' })
     public description!: string;
+
+    @ManyToOne(() => Product, (product) => product.details)
+    public product!: Product;
 
     constructor(productDetail: ProductDetail) {
         Object.assign(this, productDetail);

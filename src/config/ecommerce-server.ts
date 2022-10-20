@@ -3,6 +3,7 @@ import cors from "cors";
 import { DataSource } from 'typeorm';
 import userRoutes from "../routes/user.routes";
 import authRoutes from "../routes/auth.routes";
+import productRoutes from "../routes/product.routes";
 import cookieParser from "cookie-parser";
 
 export class EcommerceServer {
@@ -14,6 +15,7 @@ export class EcommerceServer {
         this.paths = {
             user: '/api/user',
             auth: '/api/auth',
+            product: '/api/product',
         }
 
         this.connectDatabase();
@@ -36,6 +38,7 @@ export class EcommerceServer {
     private routes(): void {
         this.app.use(this.paths.user, userRoutes);
         this.app.use(this.paths.auth, authRoutes);
+        this.app.use(this.paths.product, productRoutes);
     }
 
     private connectDatabase(): void {

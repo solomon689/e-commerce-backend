@@ -25,12 +25,11 @@ export class Product {
     @Column({ type: 'varchar', nullable: true, array: true })
     public color?: string[];
 
-    @Column({ type: 'text' })
-    public description!: string;
+    @Column({ type: 'text', nullable: true })
+    public description?: string;
 
-    @OneToOne(() => ProductDetail)
-    @JoinColumn()
-    public detail!: ProductDetail;
+    @OneToMany(() => ProductDetail, (detail) => detail.product, { cascade: ['insert'] })
+    public details!: ProductDetail[];
 
     @OneToMany(() => ProductRating, (productRating) => productRating.product)
     public ratings?: ProductRating[];
