@@ -2,15 +2,18 @@ import express, { Application } from "express";
 import cors from "cors";
 import { DataSource } from 'typeorm';
 import userRoutes from "../routes/user.routes";
+import authRoutes from "../routes/auth.routes";
+import cookieParser from "cookie-parser";
 
 export class EcommerceServer {
     private app: Application;
-    private paths;
+    private paths: any;
 
     constructor(private readonly dataSource: DataSource,) {
         this.app = express();
         this.paths = {
-            user: '/api/user'
+            user: '/api/user',
+            auth: '/api/auth',
         }
 
         this.connectDatabase();
@@ -27,10 +30,12 @@ export class EcommerceServer {
     private middlewares(): void {
         this.app.use(cors());
         this.app.use(express.json());
+        this.app.use(cookieParser());
     }
 
     private routes(): void {
         this.app.use(this.paths.user, userRoutes);
+        this.app.use(this.paths.auth, authRoutes);
     }
 
     private connectDatabase(): void {

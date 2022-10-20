@@ -30,7 +30,6 @@ export class UserController {
 
     public async findUserById(req: Request, res: Response) {
         try {
-            console.log(req.params.userId);
             const foundedUser: User | null = await this.userService.findUserById(req.params.userId, {
                 addresses: true, favorites: true, purchases: true,
             });
