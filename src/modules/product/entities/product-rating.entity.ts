@@ -12,7 +12,7 @@ export class ProductRating {
     @Column({ type: 'text', nullable: true })
     public comment!: string;
 
-    @ManyToOne(() => Product, (product) => product.ratings)
+    @ManyToOne(() => Product, (product) => product.ratings, { onDelete: 'CASCADE' })
     public product!: Product;
 
     constructor(productRating: ProductRating) {

@@ -28,10 +28,10 @@ export class Product {
     @Column({ type: 'text', nullable: true })
     public description?: string;
 
-    @OneToMany(() => ProductDetail, (detail) => detail.product, { cascade: ['insert'] })
+    @OneToMany(() => ProductDetail, (detail) => detail.product, { cascade: ['insert', 'update'] })
     public details!: ProductDetail[];
 
-    @OneToMany(() => ProductRating, (productRating) => productRating.product)
+    @OneToMany(() => ProductRating, (productRating) => productRating.product, { eager: true })
     public ratings?: ProductRating[];
 
     constructor(product: Product) {
