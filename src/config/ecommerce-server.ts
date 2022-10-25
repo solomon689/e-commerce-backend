@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import userRoutes from "../routes/user.routes";
 import authRoutes from "../routes/auth.routes";
 import productRoutes from "../routes/product.routes";
+import categoryRoutes from "../routes/category.routes";
 import cookieParser from "cookie-parser";
 
 export class EcommerceServer {
@@ -16,6 +17,7 @@ export class EcommerceServer {
             user: '/api/user',
             auth: '/api/auth',
             product: '/api/product',
+            category: '/api/category',
         }
 
         this.connectDatabase();
@@ -39,6 +41,7 @@ export class EcommerceServer {
         this.app.use(this.paths.user, userRoutes);
         this.app.use(this.paths.auth, authRoutes);
         this.app.use(this.paths.product, productRoutes);
+        this.app.use(this.paths.category, categoryRoutes);
     }
 
     private connectDatabase(): void {
