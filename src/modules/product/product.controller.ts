@@ -6,6 +6,8 @@ import { HttpStatus } from '../../utils/enums/http-status';
 import { UpdateResult, DeleteResult } from 'typeorm';
 import { RoleService } from '../roles/role.service';
 import { Roles } from '../../utils/enums/roles.enum';
+import { ForbiddenError } from '../../utils/errors/forbidden-error';
+import { BadRequestError } from '../../utils/errors/bad-request-error';
 
 export class ProductController {
     constructor(
@@ -24,10 +26,9 @@ export class ProductController {
         const roleExist: boolean = await this.roleService.verifyRole(userRole);
 
         if (!roleExist || userRole != Roles.ADMINISTRATOR) {
-            return res.status(HttpStatus.FORBIDDEN).json({
-                statusCode: HttpStatus.FORBIDDEN,
-                message: 'No tiene permisos para ejecutar esta acción',
-            });
+            return res.status(HttpStatus.FORBIDDEN).json(
+                new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
+            );
         }
 
         try {
@@ -52,10 +53,9 @@ export class ProductController {
         const roleExist: boolean = await this.roleService.verifyRole(userRole);
 
         if (!roleExist) {
-            return res.status(HttpStatus.FORBIDDEN).json({
-                statusCode: HttpStatus.FORBIDDEN,
-                message: 'No tiene permisos para ejecutar esta acción',
-            });
+            return res.status(HttpStatus.FORBIDDEN).json(
+                new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
+            );
         }
 
         try {
@@ -84,10 +84,9 @@ export class ProductController {
         const roleExist: boolean = await this.roleService.verifyRole(userRole);
 
         if (!roleExist) {
-            return res.status(HttpStatus.FORBIDDEN).json({
-                statusCode: HttpStatus.FORBIDDEN,
-                message: 'No tiene permisos para ejecutar esta acción',
-            });
+            return res.status(HttpStatus.FORBIDDEN).json(
+                new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
+            );
         }
         
         try {
@@ -121,19 +120,17 @@ export class ProductController {
         const roleExist: boolean = await this.roleService.verifyRole(userRole);
 
         if (!roleExist || userRole === Roles.USER) {
-            return res.status(HttpStatus.FORBIDDEN).json({
-                statusCode: HttpStatus.FORBIDDEN,
-                message: 'No tiene permisos para ejecutar esta acción',
-            });
+            return res.status(HttpStatus.FORBIDDEN).json(
+                new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse()
+            );
         }
 
         try {
             const productId: string = req.params.productId;
 
-            if (!productId) return res.status(HttpStatus.BAD_REQUEST).json({
-                statusCode: HttpStatus.BAD_REQUEST,
-                message: 'Debe ingresar el id del producto',
-            })
+            if (!productId) return res.status(HttpStatus.BAD_REQUEST).json(
+                new BadRequestError('Debe ingresar el id del producto').createResponse(),
+            )
 
             const updatedProduct: UpdateResult = await this.productService.updateProduct(productId, req.body);
 
@@ -154,20 +151,18 @@ export class ProductController {
         const roleExist: boolean = await this.roleService.verifyRole(userRole);
 
         if (!roleExist || userRole === Roles.USER) {
-            return res.status(HttpStatus.FORBIDDEN).json({
-                statusCode: HttpStatus.FORBIDDEN,
-                message: 'No tiene permisos para ejecutar esta acción',
-            });
+            return res.status(HttpStatus.FORBIDDEN).json(
+                new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse()
+            );
         }
 
         try {
             const productId: string = req.params.productId;
 
             if (!productId) {
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    statusCode: HttpStatus.BAD_REQUEST,
-                    message: 'Debe de ingresar el id del producto',
-                });
+                return res.status(HttpStatus.BAD_REQUEST).json(
+                    new BadRequestError('Debe de ingresar el id del producto').createResponse(),
+                );
             }
 
             const deletedProduct: DeleteResult = await this.productService
