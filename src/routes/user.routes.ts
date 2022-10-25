@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { UserController } from '../modules/user/user.controller';
 import { UserService } from '../modules/user/user.service';
+import { verifyTokenMiddleware } from '../utils/middlewares/auth.middleware';
 
 const userController: UserController = new UserController(
     UserService.getInstance(),
@@ -8,6 +9,8 @@ const userController: UserController = new UserController(
 const router: Router = Router();
 
 router.post('/', userController.createUser);
-router.get('/:userId', userController.findUserById);
+router.get('/:userId', [
+    verifyTokenMiddleware,
+], userController.findUserById);
 
 export default router;
