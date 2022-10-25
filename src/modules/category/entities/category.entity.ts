@@ -7,12 +7,10 @@ export class Category {
     public id?: string;
 
     @Column({ type: 'varchar', length: 50 })
-    public name: string;
+    public name!: string;
 
-    @OneToMany(() => SubCategory, (subCategory) => subCategory.category)
-    public subCategory?: SubCategory;
+    @OneToMany(() => SubCategory, (subCategory) => subCategory.category, { eager: true, cascade: ['insert', 'update'] })
+    public subCategories?: SubCategory[];
 
-    constructor(name: string) {
-        this.name = name;
-    }
+    constructor() {}
 }

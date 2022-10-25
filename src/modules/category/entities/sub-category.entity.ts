@@ -7,13 +7,10 @@ export class SubCategory {
     public id?: string;
 
     @Column({ type: 'varchar', length: 100 })
-    public name: string;
+    public name!: string;
 
-    @ManyToOne(() => Category, (category) => category.subCategory)
-    public category: Category;
+    @ManyToOne(() => Category, (category) => category.subCategories, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    public category!: Category;
 
-    constructor(name: string, category: Category) {
-        this.name = name;
-        this.category = category;
-    }
+    constructor() {}
 }
