@@ -1,7 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Address } from './address.entity';
 import { Product } from '../../product/entities/product.entity';
 import { Purchase } from './purchases.entity';
+import { Role } from '../../roles/roles.entity';
 
 @Entity()
 export class User {
@@ -20,13 +21,14 @@ export class User {
     @Column({ type: 'text' })
     public password!: string;
 
-    @Column({ type: 'varchar', array: true, default: ["USER"] })
-    public roles?: string[];
+    @ManyToOne(() => Role, (role) => role.user, { eager: true } )
+    @JoinColumn({ name: 'role_id' })
+    public role!: Role;
 
-    @OneToMany(() => Address, (address) => address.user)
+    @OneToMany(() => Address, (address) => address.user, { eager: true })
     public addresses!: Address[];
 
-    @OneToMany(() => Purchase, (purchase) => purchase.user)
+    @OneToMany(() => Purchase, (purchase) => purchase.user, { eager: true })
     public purchases!: Purchase[];
 
     @ManyToMany(() => Product)
