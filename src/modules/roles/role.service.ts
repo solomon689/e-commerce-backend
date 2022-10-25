@@ -18,7 +18,7 @@ export class RoleService {
         return RoleService.instance;
     }
 
-    public async  verifyRole(role: string): Promise<boolean> {
+    public async verifyRole(role: string): Promise<boolean> {
         const roleExist: Role | null = await this.roleRepository.findOne({
             where: { code: role }
         });
