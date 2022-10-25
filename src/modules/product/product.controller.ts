@@ -4,10 +4,14 @@ import { Product } from './entities/product.entity';
 import { CustomTypeOrmError } from "../../utils/errors/typeorm-error";
 import { HttpStatus } from '../../utils/enums/http-status';
 import { UpdateResult, DeleteResult } from 'typeorm';
+import { RoleService } from '../roles/role.service';
+import { Roles } from '../../utils/enums/roles.enum';
+import { Role } from '../roles/roles.entity';
 
 export class ProductController {
     constructor(
         private readonly productService: ProductService,
+        private readonly roleService: RoleService,
     ) {
         this.createProduct = this.createProduct.bind(this);
         this.findProducts = this.findProducts.bind(this);
@@ -17,10 +21,19 @@ export class ProductController {
     }
 
     public async createProduct(req: Request, res: Response) {
+        const userRole: string = req.body.userRole;
+
+        if (userRole != Roles.ADMINISTRATOR) {
+            return res.status(HttpStatus.FORBIDDEN).json({
+                statusCode: HttpStatus.FORBIDDEN,
+                message: 'No tiene permisos para ejecutar esta acción',
+            });
+        }
+
         try {
             const createdProduct: Product = await this.productService
                 .createProduct(req.body);
-                
+            
             return res.status(HttpStatus.CREATED).json({
                 statusCode: HttpStatus.CREATED,
                 message: 'Producto creado con exito!',
@@ -84,6 +97,15 @@ export class ProductController {
     }
 
     public async updateProduct(req: Request, res: Response) {
+        const userRole: string = req.body.userRole;
+
+        if (userRole === Roles.USER) {
+            return res.status(HttpStatus.FORBIDDEN).json({
+                statusCode: HttpStatus.FORBIDDEN,
+                message: 'No tiene permisos para ejecutar esta acción',
+            });
+        }
+
         try {
             const productId: string = req.params.productId;
 
@@ -107,6 +129,15 @@ export class ProductController {
     }
 
     public async deleteProduct(req: Request, res: Response) {
+        const userRole: string = req.body.userRole;
+
+        if (userRole === Roles.USER) {
+            return res.status(HttpStatus.FORBIDDEN).json({
+                statusCode: HttpStatus.FORBIDDEN,
+                message: 'No tiene permisos para ejecutar esta acción',
+            });
+        }
+
         try {
             const productId: string = req.params.productId;
 

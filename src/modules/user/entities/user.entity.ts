@@ -20,8 +20,8 @@ export class User {
     @Column({ type: 'text' })
     public password!: string;
 
-    @Column({ type: 'varchar', array: true, default: ["USER"] })
-    public roles?: string[];
+    @Column({ type: 'varchar', default: "USER" })
+    public role?: string;
 
     @OneToMany(() => Address, (address) => address.user)
     public addresses!: Address[];

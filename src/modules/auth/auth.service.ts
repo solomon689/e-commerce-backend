@@ -34,7 +34,10 @@ export class AuthService {
 
         if (!isSamePassword) return null;
 
-        const token: string = createToken({ id: user.id });
+        const token: string = createToken({ 
+            id: user.id,
+            role: user.role, 
+        });
 
         return token;
     }
