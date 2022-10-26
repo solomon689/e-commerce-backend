@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { HttpStatus } from '../../utils/enums/http-status';
 import { User } from './entities/user.entity';
 import { CustomTypeOrmError } from '../../utils/errors/typeorm-error';
+import { NotFoundError } from '../../utils/errors/not-found-error';
 
 export class UserController {
     constructor(private readonly userService: UserService) {
@@ -34,10 +35,9 @@ export class UserController {
             const foundedUser: User | null = await this.userService.findUserById(userId);
             
             if (!foundedUser) {
-                return res.status(HttpStatus.NOT_FOUND).json({
-                    statusCode: HttpStatus.NOT_FOUND,
-                    message: 'El usuario solicitado no existe dentro de la base de datos',
-                });
+                return res.status(HttpStatus.NOT_FOUND).json(
+                    new NotFoundError('El usuario solicitado no existe dentro de la base de datos').createResponse(),
+                );
             }
 
             const { password, ...user } = foundedUser;

@@ -59,7 +59,7 @@ export class ProductService {
         });
     }
 
-    public updateProduct(productId: string, body: any): Promise<any> {
+    public updateProduct(productId: string, body: any): Promise<Product> {
         let newData: Partial<Product> = {};
         const acceptedProperties: string[] = ['id', 'title', 'skuCode', 'stock', 'price', 'mpn', 'color', 'description'];
         const acceptedPropertiesDetail: string[] = ['id', 'detailName', 'description'];

@@ -12,8 +12,6 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 export class CategoryController {
     constructor(
         private readonly categoryService: CategoryService,
-        private readonly userService: UserService,
-        private readonly roleService: RoleService,
     ) {
         this.createCategory = this.createCategory.bind(this);
         this.findCategories = this.findCategories.bind(this);
@@ -24,15 +22,7 @@ export class CategoryController {
 
     public async createCategory(req: Request, res: Response) {
         try {
-            const userId: string = req.body.userId;
-            const userRole: string | null = await this.userService
-                .getUserRole(userId);
-
-            if (!userRole) {
-                return res.status(HttpStatus.FORBIDDEN).json(
-                    new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
-                );
-            }
+            const userRole: string = req.body.userRole;
 
             if (userRole === Roles.USER) {
                 return res.status(HttpStatus.FORBIDDEN).json(
@@ -58,23 +48,6 @@ export class CategoryController {
 
     public async findCategories(req: Request, res: Response) {
         try {
-            const userId: string = req.body.userId;
-            const userRole: string | null = await this.userService.getUserRole(userId);
-
-            if (!userRole) {
-                return res.status(HttpStatus.FORBIDDEN).json(
-                    new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
-                );
-            }
-
-            const roleExist: boolean = await this.roleService.verifyRole(userRole);
-
-            if (!roleExist) {
-                return res.status(HttpStatus.FORBIDDEN).json(
-                    new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
-                );
-            }
-
             const foundedCategories: Category[] = await this.categoryService.findCategories();
             
             if (foundedCategories.length === 0) {
@@ -97,22 +70,6 @@ export class CategoryController {
     public async findCategoryById(req: Request, res: Response) {
         try {
             const categoryId: string = req.params.categoryId;
-            const userId: string = req.body.userId;
-            const userRole: string | null = await this.userService.getUserRole(userId);
-
-            if (!userRole) {
-                return res.status(HttpStatus.FORBIDDEN).json(
-                    new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
-                );
-            }
-
-            const roleExist: boolean = await this.roleService.verifyRole(userRole);
-
-            if (!roleExist) {
-                return res.status(HttpStatus.FORBIDDEN).json(
-                    new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
-                );
-            }
 
             const foundedCategory: Category | null = await this.categoryService
                 .findCategoryById(categoryId);
@@ -140,18 +97,9 @@ export class CategoryController {
     public async deleteCategoryById(req: Request, res: Response) {
         try {
             const categoryId: string = req.params.categoryId;
-            const userId: string = req.body.userId;
-            const userRole: string | null = await this.userService.getUserRole(userId);
+            const userRole: string = req.body.userRole;
 
-            if (!userRole) {
-                return res.status(HttpStatus.FORBIDDEN).json(
-                    new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
-                );
-            }
-
-            const roleExist: boolean = await this.roleService.verifyRole(userRole);
-
-            if (!roleExist) {
+            if (userRole === Roles.USER) {
                 return res.status(HttpStatus.FORBIDDEN).json(
                     new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
                 );
@@ -181,19 +129,9 @@ export class CategoryController {
 
     public async updateCategory(req: Request, res: Response) {
         try {
-            const categoryId: string = req.params.categoryId;
-            const userId: string = req.body.userId;
-            const userRole: string | null = await this.userService.getUserRole(userId);
+            const userRole: string = req.body.userRole;
 
-            if (!userRole) {
-                return res.status(HttpStatus.FORBIDDEN).json(
-                    new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
-                );
-            }
-
-            const roleExist: boolean = await this.roleService.verifyRole(userRole);
-
-            if (!roleExist) {
+            if (userRole === Roles.USER) {
                 return res.status(HttpStatus.FORBIDDEN).json(
                     new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
                 );
