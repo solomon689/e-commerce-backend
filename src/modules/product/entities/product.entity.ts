@@ -1,6 +1,8 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ProductDetail } from './product-detail.entity';
 import { ProductRating } from './product-rating.entity';
+import { Category } from '../../category/entities/category.entity';
+import { SubCategory } from '../../category/entities/sub-category.entity';
 
 @Entity()
 export class Product {
@@ -25,6 +27,9 @@ export class Product {
     @Column({ type: 'varchar', nullable: true, array: true })
     public color?: string[];
 
+    @Column({ type: 'text', nullable: true, name: 'url_image' })
+    public urlImage?: string;
+
     @Column({ type: 'text', nullable: true })
     public description?: string;
 
@@ -33,6 +38,10 @@ export class Product {
 
     @OneToMany(() => ProductRating, (productRating) => productRating.product, { eager: true })
     public ratings?: ProductRating[];
+
+    @ManyToMany(() => SubCategory, { eager: true, cascade: true })
+    @JoinTable()
+    public categories!: SubCategory[];
 
     constructor(product: Product) {
         Object.assign(this, product);

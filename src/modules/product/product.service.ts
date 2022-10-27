@@ -2,6 +2,7 @@ import { DataSource, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { Database } from '../../config/database';
 import { Product } from './entities/product.entity';
 import { ProductDetail } from './entities/product-detail.entity';
+import { SubCategory } from '../category/entities/sub-category.entity';
 export class ProductService {
     private static instance: ProductService;
     private readonly productRepository: Repository<Product>;
@@ -24,6 +25,7 @@ export class ProductService {
 
     public createProduct(product: any): Promise<Product> {
         let details: ProductDetail[] = [];
+        let categories: SubCategory[] = [];
         const newProduct: Product = this.productRepository.create(product as Object);
 
         if (product.details && product.details.length > 0) {
@@ -35,7 +37,20 @@ export class ProductService {
             }
         }
 
+        if (product.categories?.length > 0) {
+            for (const category of product.categories) {
+                if (!category) continue;
+
+                let mappedCategory = new SubCategory();
+
+                mappedCategory.id = category.id;
+                mappedCategory.name = category.name;
+                categories.push(mappedCategory);
+            }
+        }
+
         newProduct.details = details;
+        newProduct.categories = categories;
         
         return this.productRepository.save(newProduct);
     }
@@ -61,8 +76,9 @@ export class ProductService {
 
     public updateProduct(productId: string, body: any): Promise<Product> {
         let newData: Partial<Product> = {};
-        const acceptedProperties: string[] = ['id', 'title', 'skuCode', 'stock', 'price', 'mpn', 'color', 'description'];
+        const acceptedProperties: string[] = ['id', 'title', 'skuCode', 'stock', 'price', 'mpn', 'color', 'description', 'urlImage'];
         const acceptedPropertiesDetail: string[] = ['id', 'detailName', 'description'];
+        const acceptedCategoryProperties: string[] = ['id', 'name'];
 
         for (const property in body) {
             if (!property) continue;
@@ -87,7 +103,24 @@ export class ProductService {
                 newData.details?.push(newDetailData as ProductDetail);
             }
         }
-        
+
+        if (body.categories?.length > 0) {
+            newData.categories = []; // Se inicializa el array.
+            
+            for (const category of body.categories) {
+                let newCategoryData: Partial<SubCategory> = {};
+
+                for (const property in category) {
+                    if (!property) continue;
+                    if (acceptedCategoryProperties.indexOf(property) === -1) continue;
+
+                    newCategoryData[property as keyof SubCategory] = category[property]
+                }
+
+                newData.categories.push(newCategoryData as SubCategory);
+            }
+        }
+
         return this.productRepository.save(newData);
     }
 
