@@ -3,6 +3,7 @@ import { Database } from '../../config/database';
 import { Product } from './entities/product.entity';
 import { ProductDetail } from './entities/product-detail.entity';
 import { SubCategory } from '../category/entities/sub-category.entity';
+import { CloudinaryService } from '../../utils/services/cloudinary.service';
 export class ProductService {
     private static instance: ProductService;
     private readonly productRepository: Repository<Product>;
@@ -10,6 +11,7 @@ export class ProductService {
 
     constructor(
         private readonly dataSource: DataSource,
+        private readonly cloudinaryService: CloudinaryService,
     ) {
         this.productRepository = this.dataSource.getRepository(Product);
         this.productDetailRepo = this.dataSource.getRepository(ProductDetail);
@@ -17,13 +19,16 @@ export class ProductService {
 
     public static getInstance(): ProductService {
         if (!ProductService.instance) {
-            return new ProductService(Database.getInstance().getDataSource());
+            return new ProductService(
+                Database.getInstance().getDataSource(),
+                CloudinaryService.getInstance(),
+            );
         }
 
         return ProductService.instance;
     }
 
-    public createProduct(product: any): Promise<Product> {
+    public async createProduct(product: any, file?: any): Promise<Product> {
         let details: ProductDetail[] = [];
         let categories: SubCategory[] = [];
         const newProduct: Product = this.productRepository.create(product as Object);
@@ -47,6 +52,10 @@ export class ProductService {
                 mappedCategory.name = category.name;
                 categories.push(mappedCategory);
             }
+        }
+
+        if (file) {
+            newProduct.urlImage = await this.cloudinaryService.uploadImage(file, 'products');
         }
 
         newProduct.details = details;

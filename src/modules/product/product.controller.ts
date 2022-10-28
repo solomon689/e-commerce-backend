@@ -3,12 +3,11 @@ import { ProductService } from "./product.service";
 import { Product } from './entities/product.entity';
 import { CustomTypeOrmError } from "../../utils/errors/typeorm-error";
 import { HttpStatus } from '../../utils/enums/http-status';
-import { UpdateResult, DeleteResult } from 'typeorm';
-import { RoleService } from '../roles/role.service';
+import { DeleteResult } from 'typeorm';
 import { Roles } from '../../utils/enums/roles.enum';
 import { ForbiddenError } from '../../utils/errors/forbidden-error';
 import { BadRequestError } from '../../utils/errors/bad-request-error';
-import { UserService } from '../user/user.service';
+import cloudinary from 'cloudinary';
 
 export class ProductController {
     constructor(
@@ -24,15 +23,16 @@ export class ProductController {
     public async createProduct(req: Request, res: Response) {
         try {
             const userRole: string = req.body.userRole;
+            const product: any = JSON.parse(req.body.data);
 
             if (userRole != Roles.ADMINISTRATOR) {
                 return res.status(HttpStatus.FORBIDDEN).json(
                     new ForbiddenError('No tiene permisos para ejecutar esta acción').createResponse(),
                 );
             }
-
+            
             const createdProduct: Product = await this.productService
-                .createProduct(req.body);
+                .createProduct(product, req.file?.path);
             
             return res.status(HttpStatus.CREATED).json({
                 statusCode: HttpStatus.CREATED,
