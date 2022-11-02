@@ -64,13 +64,19 @@ export class ProductService {
         return this.productRepository.save(newProduct);
     }
 
-    public findProducts(options?: { details?: boolean, ratings?: boolean }): Promise<Product[]> {
-        return this.productRepository.find({
-            relations: {
-                details: options?.details,
-                ratings: options?.ratings,
-            }
-        });
+    public findProducts(page: number): Promise<Product[]> {
+        let totalCount: number = 0;
+
+        if (page <= 0) page = 1;
+
+        totalCount = (page * 10) - 10;
+    
+        return this.productRepository
+            .createQueryBuilder("product")
+            .leftJoinAndSelect("product.details", "product.ratings")
+            .skip(totalCount)
+            .take(10)
+            .getMany();
     }
 
     public findProductById(

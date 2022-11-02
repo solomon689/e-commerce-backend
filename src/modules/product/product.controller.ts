@@ -7,7 +7,6 @@ import { DeleteResult } from 'typeorm';
 import { Roles } from '../../utils/enums/roles.enum';
 import { ForbiddenError } from '../../utils/errors/forbidden-error';
 import { BadRequestError } from '../../utils/errors/bad-request-error';
-import cloudinary from 'cloudinary';
 
 export class ProductController {
     constructor(
@@ -49,9 +48,10 @@ export class ProductController {
 
     public async findProducts(req: Request, res: Response) {
         try {
+            const page: number = parseInt(req.query.page as string || '1');
             const products: Product[] = await this.productService
-                .findProducts({ details: true });
-
+                .findProducts(page);
+            
             if (!products) {
                 return res.status(HttpStatus.NO_CONTENT).json();
             }
