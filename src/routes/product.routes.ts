@@ -18,11 +18,7 @@ router.post('/', [
 ]
 , productController.createProduct);
 
-router.get('/', [
-    verifyTokenMiddleware,
-    roleExistMiddleware,
-] 
-, productController.findProducts);
+router.get('/', productController.findProducts);
 
 router.get('/:productId',[
     verifyTokenMiddleware,

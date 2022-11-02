@@ -32,7 +32,10 @@ export class EcommerceServer {
     }
 
     private middlewares(): void {
-        this.app.use(cors());
+        this.app.use(cors({
+            origin: 'http://localhost:4200',
+            credentials: true,
+        }));
         this.app.use(express.json());
         this.app.use(cookieParser());
     }

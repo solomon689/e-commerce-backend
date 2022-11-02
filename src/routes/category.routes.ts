@@ -13,10 +13,7 @@ router.post('/', [
     roleExistMiddleware,
 ], categoryController.createCategory);
 
-router.get('/', [
-    verifyTokenMiddleware,
-    roleExistMiddleware,
-], categoryController.findCategories);
+router.get('/', categoryController.findCategories);
 
 router.get('/:categoryId', [
     verifyTokenMiddleware,
