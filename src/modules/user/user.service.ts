@@ -3,20 +3,28 @@ import { User } from './entities/user.entity';
 import { Database } from '../../config/database';
 import { Address } from './entities/address.entity';
 import { hashPassword } from '../../utils/functions/security';
+import { ProductService } from '../product/product.service';
+import { Product } from '../product/entities/product.entity';
 
 export class UserService {
     private static instance: UserService;
     private userRepository: Repository<User>;
     private addressRepository: Repository<Address>;
 
-    private constructor(private readonly dataSource: DataSource,) {
+    private constructor(
+        private readonly dataSource: DataSource,
+        private readonly productService: ProductService,
+    ) {
         this.userRepository = this.dataSource.getRepository(User);
         this.addressRepository = this.dataSource.getRepository(Address);
     }
 
     public static getInstance() {
         if (!UserService.instance) {
-            return new UserService(Database.getInstance().getDataSource());
+            return new UserService(
+                Database.getInstance().getDataSource(),
+                ProductService.getInstance(),
+            );
         }
 
         return UserService.instance;
@@ -70,5 +78,21 @@ export class UserService {
         const userRole: string | undefined = user?.role?.code;
 
         return (userRole) ? userRole : null;
+    }
+
+    public async addProductToUserFavorite(userId: string, productId: string) {
+        const user: User | null = await this.findUserById(userId);
+
+        if (!user) return null;
+
+        const product: Product | null = await this.productService.findProductById(productId, {
+            details: false, ratings: false,
+        });
+
+        if (!product) return null;
+
+        user.favorites?.push(product);
+        console.log(user);
+        return this.userRepository.save(user);
     }
 }

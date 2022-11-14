@@ -79,6 +79,10 @@ export class ProductService {
             .getMany();
     }
 
+    public totalProducts(): Promise<number> {
+        return this.productRepository.count();
+    }
+
     public findProductById(
         productId: string, 
         options?: { details?: boolean, ratings?: boolean },

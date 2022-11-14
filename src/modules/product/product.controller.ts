@@ -51,14 +51,16 @@ export class ProductController {
             const page: number = parseInt(req.query.page as string || '1');
             const products: Product[] = await this.productService
                 .findProducts(page);
-            
+            const totalProducts: number = await this.productService.totalProducts();
+
             if (!products) {
                 return res.status(HttpStatus.NO_CONTENT).json();
             }
-
+            
             return res.status(HttpStatus.OK).json({
                 statusCode: HttpStatus.OK,
                 message: 'Productos encontrados con exito!',
+                totalProducts,
                 data: products,
             });
         } catch (error) {

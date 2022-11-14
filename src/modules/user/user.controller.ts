@@ -9,6 +9,7 @@ export class UserController {
     constructor(private readonly userService: UserService) {
         this.createUser = this.createUser.bind(this);
         this.findUserById = this.findUserById.bind(this);
+        this.addProductToFavorite = this.addProductToFavorite.bind(this);
     }
 
     public async createUser(req: Request, res: Response) {
@@ -47,6 +48,28 @@ export class UserController {
                 message: 'Usuario encontrado con exito!',
                 data: user,
             });
+        } catch (error) {
+            console.error(error);
+            const typeormError: CustomTypeOrmError = new CustomTypeOrmError(error);
+
+            return res.status(typeormError.statusCode).json(typeormError.createResponse());
+        }
+    }
+
+    public async addProductToFavorite(req: Request, res: Response) {
+        try {
+            const userId: string = req.body.userId;
+            const productId: string = req.body.productId;
+
+            const savedProductToFavorite: User | null = await this.userService
+                .addProductToUserFavorite(userId,productId);
+
+            if (savedProductToFavorite) {
+                return res.status(HttpStatus.OK).json({
+                    statusCode: HttpStatus.OK,
+                    message: 'Producto agregado a favoritos con exito!',
+                });
+            }
         } catch (error) {
             console.error(error);
             const typeormError: CustomTypeOrmError = new CustomTypeOrmError(error);

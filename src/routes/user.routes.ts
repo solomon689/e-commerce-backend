@@ -9,9 +9,15 @@ const userController: UserController = new UserController(
 const router: Router = Router();
 
 router.post('/', userController.createUser);
+
 router.get('/:userId', [
     verifyTokenMiddleware,
     roleExistMiddleware,
 ], userController.findUserById);
+
+router.post('/favorites', [
+    verifyTokenMiddleware,
+    roleExistMiddleware,
+], userController.addProductToFavorite);
 
 export default router;

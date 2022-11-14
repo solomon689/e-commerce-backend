@@ -31,7 +31,7 @@ export class User {
     @OneToMany(() => Purchase, (purchase) => purchase.user, { eager: true })
     public purchases!: Purchase[];
 
-    @ManyToMany(() => Product)
+    @ManyToMany(() => Product, { cascade: true, eager: true })
     @JoinTable()
     public favorites?: Product[];
 
