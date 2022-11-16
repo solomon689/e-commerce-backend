@@ -4,7 +4,7 @@ import { ProductRating } from './product-rating.entity';
 import { Category } from '../../category/entities/category.entity';
 import { SubCategory } from '../../category/entities/sub-category.entity';
 
-@Entity()
+@Entity('product')
 export class Product {
     @PrimaryGeneratedColumn('uuid')
     public id?: string;

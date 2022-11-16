@@ -20,11 +20,9 @@ router.post('/', [
 
 router.get('/', productController.findProducts);
 
-router.get('/:productId',[
-    verifyTokenMiddleware,
-    roleExistMiddleware,
-]
-, productController.findProductById);
+router.get('/:productId', productController.findProductById);
+
+router.get('/category/recommended', productController.getProductsByCategory);
 
 router.put('/:productId',[
     verifyTokenMiddleware,

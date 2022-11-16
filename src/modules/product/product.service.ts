@@ -152,4 +152,15 @@ export class ProductService {
             .returning('id')
             .execute();
     }
+
+    public findProductsByCategory(categoryIds: string[], limit: number, offset: number): Promise<any> {
+        return this.dataSource
+            .createQueryBuilder()
+            .select("product")
+            .from(Product, "product")
+            .leftJoinAndSelect("product.categories", "category", "category.id IN(:...categoryIds)", { categoryIds })
+            .limit(limit)
+            .offset(offset)
+            .getMany();
+    }
 }

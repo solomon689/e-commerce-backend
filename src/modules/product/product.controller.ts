@@ -17,6 +17,7 @@ export class ProductController {
         this.findProductById = this.findProductById.bind(this);
         this.updateProduct = this.updateProduct.bind(this);
         this.deleteProduct = this.deleteProduct.bind(this);
+        this.getProductsByCategory = this.getProductsByCategory.bind(this);
     }
 
     public async createProduct(req: Request, res: Response) {
@@ -167,6 +168,29 @@ export class ProductController {
             const typeormError: CustomTypeOrmError = new CustomTypeOrmError(error);
 
             return res.status(typeormError.statusCode).json(typeormError.createResponse());
+        }
+    }
+
+    public async getProductsByCategory(req: Request, res: Response) {
+        try {
+            const limit: number = parseInt(req.query.limit as string) || 9;
+            const offset: number = parseInt(req.query.offset as string) || 0;
+            const categoryIds: string[] | undefined = (req.query.categoryIds as string)?.split(',');
+            
+            if (categoryIds) {
+                const products: Product[] = await this.productService
+                    .findProductsByCategory(categoryIds, limit, offset);
+
+                return res.status(HttpStatus.OK).json({
+                    statusCode: HttpStatus.OK,
+                    message: 'Productos encontrados con exito!',
+                    limit,
+                    offset,
+                    data: products,
+                });
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 }
