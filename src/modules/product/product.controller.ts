@@ -7,6 +7,7 @@ import { DeleteResult } from 'typeorm';
 import { Roles } from '../../utils/enums/roles.enum';
 import { ForbiddenError } from '../../utils/errors/forbidden-error';
 import { BadRequestError } from '../../utils/errors/bad-request-error';
+import { DEFAULT_LIMIT, DEFAULT_OFFSET } from '../../config/constants';
 
 export class ProductController {
     constructor(
@@ -49,9 +50,10 @@ export class ProductController {
 
     public async findProducts(req: Request, res: Response) {
         try {
-            const page: number = parseInt(req.query.page as string || '1');
+            const limit: number = parseInt(req.query.limit as string) || DEFAULT_LIMIT;
+            const offset: number = parseInt(req.query.offset as string) || DEFAULT_OFFSET;
             const products: Product[] = await this.productService
-                .findProducts(page);
+                .findProducts(limit, offset);
             const totalProducts: number = await this.productService.totalProducts();
 
             if (!products) {
@@ -61,6 +63,8 @@ export class ProductController {
             return res.status(HttpStatus.OK).json({
                 statusCode: HttpStatus.OK,
                 message: 'Productos encontrados con exito!',
+                limit,
+                offset,
                 totalProducts,
                 data: products,
             });
@@ -176,7 +180,7 @@ export class ProductController {
             const limit: number = parseInt(req.query.limit as string) || 9;
             const offset: number = parseInt(req.query.offset as string) || 0;
             const categoryIds: string[] | undefined = (req.query.categoryIds as string)?.split(',');
-            
+        
             if (categoryIds) {
                 const products: Product[] = await this.productService
                     .findProductsByCategory(categoryIds, limit, offset);
@@ -191,6 +195,9 @@ export class ProductController {
             }
         } catch (error) {
             console.error(error);
+            const typeormError: CustomTypeOrmError = new CustomTypeOrmError(error);
+
+            return res.status(typeormError.statusCode).json(typeormError.createResponse());
         }
     }
 }

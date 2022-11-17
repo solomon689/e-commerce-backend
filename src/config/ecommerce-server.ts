@@ -47,7 +47,7 @@ export class EcommerceServer {
         this.app.use(this.paths.category, categoryRoutes);
     }
 
-    private connectDatabase(): void {
+    public connectDatabase(): void {
         this.dataSource.initialize()
             .then(() => console.log('Base de datos conectada correctamente'))
             .catch((error) => console.error('Ha ocurrido un error al momento de iniciar la base de datos =>', error));

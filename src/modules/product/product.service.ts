@@ -4,6 +4,7 @@ import { Product } from './entities/product.entity';
 import { ProductDetail } from './entities/product-detail.entity';
 import { SubCategory } from '../category/entities/sub-category.entity';
 import { CloudinaryService } from '../../utils/services/cloudinary.service';
+import { DEFAULT_LIMIT, DEFAULT_OFFSET } from '../../config/constants';
 export class ProductService {
     private static instance: ProductService;
     private readonly productRepository: Repository<Product>;
@@ -64,18 +65,12 @@ export class ProductService {
         return this.productRepository.save(newProduct);
     }
 
-    public findProducts(page: number): Promise<Product[]> {
-        let totalCount: number = 0;
-
-        if (page <= 0) page = 1;
-
-        totalCount = (page * 10) - 10;
-    
+    public findProducts(limit: number = DEFAULT_LIMIT, offset: number = DEFAULT_OFFSET): Promise<Product[]> {
         return this.productRepository
             .createQueryBuilder("product")
             .leftJoinAndSelect("product.details", "product.ratings")
-            .skip(totalCount)
-            .take(10)
+            .skip(offset)
+            .take(limit)
             .getMany();
     }
 
